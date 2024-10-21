@@ -1,3 +1,4 @@
+![Screenshot (7)](https://github.com/user-attachments/assets/4bc48629-ea66-430f-ad5b-44f0cead0343)
 Name: Aayush Thapa 
 
 Company: CODTECH IT SOLUTION 
