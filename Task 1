@@ -1,0 +1,232 @@
+/*   This is first task of CODTECH internship. This is blogging platform where you can login and add blog post on it.*/
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Blogging Platform</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eef2f3; /* Soft background */
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .post {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            transition: background-color 0.3s;
+        }
+        .post:hover {
+            background-color: #f1f1f1; /* Slightly darker on hover */
+        }
+        button {
+            padding: 10px;
+            margin: 5px;
+            background-color: #007bff; /* Bootstrap blue */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+        .comment-section {
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+        .comment {
+            margin: 5px 0;
+            padding: 5px;
+            background: #e9ecef; /* Light gray for comments */
+            border-radius: 3px;
+        }
+        .auth-container {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f7f9fc; /* Light background for auth section */
+        }
+        input[type="text"], input[type="password"], textarea {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        input[type="text"]:focus, input[type="password"]:focus, textarea:focus {
+            border-color: #007bff; /* Highlight border on focus */
+            outline: none;
+        }
+        @media (max-width: 600px) {
+            button {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Blogging Platform</h1>
+
+        <div class="auth-container">
+            <h2 id="authTitle">Sign Up</h2>
+            <input id="username" type="text" placeholder="Username" required>
+            <input id="password" type="password" placeholder="Password" required>
+            <button onclick="signUp()">Sign Up</button>
+            <button onclick="logIn()">Log In</button>
+        </div>
+
+        <div id="postForm" style="display: none;">
+            <h2>Create a New Post</h2>
+            <input id="postTitle" type="text" placeholder="Post Title" required>
+            <textarea id="postContent" rows="4" placeholder="Write your post here..." required></textarea>
+            <button onclick="addPost()">Publish Post</button>
+        </div>
+
+        <div id="posts"></div>
+    </div>
+
+    <script>
+        let users = [];
+        let currentUser = null;
+
+        function signUp() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username && password) {
+                if (users.find(u => u.username === username)) {
+                    alert("Username already exists.");
+                    return;
+                }
+                users.push({ username, password, posts: [] });
+                alert("User registered successfully!");
+                clearAuthFields();
+            } else {
+                alert("Please fill in both fields.");
+            }
+        }
+
+        function logIn() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const user = users.find(u => u.username === username && u.password === password);
+            if (user) {
+                currentUser = user;
+                document.getElementById('postForm').style.display = 'block';
+                document.getElementById('authTitle').innerText = `Welcome, ${username}!`;
+                clearAuthFields();
+                renderPosts();
+            } else {
+                alert("Invalid username or password.");
+            }
+        }
+
+        function clearAuthFields() {
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        function addPost() {
+            const title = document.getElementById('postTitle').value;
+            const content = document.getElementById('postContent').value;
+
+            if (title && content) {
+                const post = { title, content, comments: [] };
+                currentUser.posts.push(post);
+                document.getElementById('postTitle').value = '';
+                document.getElementById('postContent').value = '';
+                renderPosts();
+            } else {
+                alert("Please fill in both fields.");
+            }
+        }
+
+        function renderPosts() {
+            const postsContainer = document.getElementById('posts');
+            postsContainer.innerHTML = '';
+
+            currentUser.posts.forEach((post, index) => {
+                const postDiv = document.createElement('div');
+                postDiv.className = 'post';
+                postDiv.innerHTML = `
+                    <h3>${post.title}</h3>
+                    <p>${post.content}</p>
+                    <button onclick="editPost(${index})">Edit Post</button>
+                    <button onclick="deletePost(${index})">Delete Post</button>
+                    <div class="comment-section">
+                        <input id="commentInput-${index}" type="text" placeholder="Add a comment...">
+                        <button onclick="addComment(${index})">Comment</button>
+                        <div id="comments-${index}"></div>
+                    </div>
+                `;
+                postsContainer.appendChild(postDiv);
+            });
+        }
+
+        function deletePost(index) {
+            currentUser.posts.splice(index, 1);
+            renderPosts();
+        }
+
+        function editPost(index) {
+            const title = prompt("Edit post title:", currentUser.posts[index].title);
+            const content = prompt("Edit post content:", currentUser.posts[index].content);
+
+            if (title && content) {
+                currentUser.posts[index].title = title;
+                currentUser.posts[index].content = content;
+                renderPosts();
+            }
+        }
+
+        function addComment(postIndex) {
+            const commentInput = document.getElementById(`commentInput-${postIndex}`);
+            const commentText = commentInput.value;
+
+            if (commentText) {
+                currentUser.posts[postIndex].comments.push(commentText);
+                commentInput.value = '';
+                renderComments(postIndex);
+            } else {
+                alert("Please enter a comment.");
+            }
+        }
+
+        function renderComments(postIndex) {
+            const commentsContainer = document.getElementById(`comments-${postIndex}`);
+            commentsContainer.innerHTML = '';
+            currentUser.posts[postIndex].comments.forEach(comment => {
+                const commentDiv = document.createElement('div');
+                commentDiv.className = 'comment';
+                commentDiv.textContent = comment;
+                commentsContainer.appendChild(commentDiv);
+            });
+        }
+    </script>
+</body>
+</html>
