@@ -5,8 +5,9 @@ DOMAIN: WEB DEVELOPMENT
 DURATION: SEPT 25TH TO 25TH OCT 2024
 MENTOR: NEELA SANTHOSH KUMAR
 
-##Project Overview
-###Project Name: Simple Blogging Platform
+Project Overview
+
+Project Name: Simple Blogging Platform
 
 Description: This web application allows users to create an account, log in, and publish blog posts. Users can add comments to their posts and manage their own content. The platform is designed with a user-friendly interface and provides essential features for blogging.
 
